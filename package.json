@@ -1,0 +1,23 @@
+{
+  "name": "curve-speed-warning",
+  "version": "5.0.0",
+  "description": "In-vehicle advisory speed warning for horizontal curves, from OpenStreetMap geometry.",
+  "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "build:sample": "node tools/make-sample-network.js",
+    "build:layer": "node tools/build-curve-layer.js",
+    "build:layer:sample": "node tools/build-curve-layer.js --input data/sample-overpass.json",
+    "replay": "node tools/replay.js",
+    "validate": "node tools/validate.js",
+    "compare": "node tools/compare-detectors.js",
+    "testroad": "node tools/make-test-road.js",
+    "testroad:check": "node tools/check-test-road.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {},
+  "license": "MIT"
+}

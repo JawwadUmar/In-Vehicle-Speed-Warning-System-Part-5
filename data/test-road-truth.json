@@ -1,0 +1,112 @@
+{
+  "designSpeed": 80,
+  "noiseMetres": 1.2,
+  "nodeSpacing": [
+    15,
+    45
+  ],
+  "seed": 7,
+  "origin": {
+    "latitude": 22.61,
+    "longitude": 75.84
+  },
+  "totalLengthMetres": 5290,
+  "curves": [
+    {
+      "radius": 500,
+      "turn": "left",
+      "spiralLengthMetres": 34.6,
+      "arcLengthMetres": 220,
+      "startChainage": 700,
+      "circularStartChainage": 734.6,
+      "circularEndChainage": 954.6,
+      "endChainage": 989.1,
+      "apexChainage": 844.6,
+      "note": "gentle, near the detection ceiling",
+      "apex": [
+        22.6101464,
+        75.8482011
+      ]
+    },
+    {
+      "radius": 230,
+      "turn": "right",
+      "spiralLengthMetres": 75.1,
+      "arcLengthMetres": 200,
+      "startChainage": 1439.1,
+      "circularStartChainage": 1514.3,
+      "circularEndChainage": 1714.3,
+      "endChainage": 1789.4,
+      "apexChainage": 1614.3,
+      "note": "IRC ruling minimum for 80 km/h",
+      "apex": [
+        22.6130426,
+        75.8549187
+      ]
+    },
+    {
+      "radius": 155,
+      "turn": "left",
+      "spiralLengthMetres": 90,
+      "arcLengthMetres": 170,
+      "startChainage": 2309.4,
+      "circularStartChainage": 2399.4,
+      "circularEndChainage": 2569.4,
+      "endChainage": 2659.4,
+      "apexChainage": 2484.4,
+      "note": "IRC absolute minimum for 80 km/h",
+      "apex": [
+        22.6088476,
+        75.8618722
+      ]
+    },
+    {
+      "radius": 340,
+      "turn": "right",
+      "spiralLengthMetres": 50.8,
+      "arcLengthMetres": 190,
+      "startChainage": 2959.4,
+      "circularStartChainage": 3010.2,
+      "circularEndChainage": 3200.2,
+      "endChainage": 3251,
+      "apexChainage": 3105.2,
+      "note": "gentle",
+      "apex": [
+        22.6130292,
+        75.8657029
+      ]
+    },
+    {
+      "radius": 90,
+      "turn": "left",
+      "spiralLengthMetres": 78,
+      "arcLengthMetres": 130,
+      "startChainage": 3731,
+      "circularStartChainage": 3809,
+      "circularEndChainage": 3939,
+      "endChainage": 4017,
+      "apexChainage": 3874,
+      "note": "substandard for 80 km/h",
+      "apex": [
+        22.6155721,
+        75.8724529
+      ]
+    },
+    {
+      "radius": 260,
+      "turn": "right",
+      "spiralLengthMetres": 66.5,
+      "arcLengthMetres": 180,
+      "startChainage": 4277,
+      "circularStartChainage": 4343.5,
+      "circularEndChainage": 4523.5,
+      "endChainage": 4590,
+      "apexChainage": 4433.5,
+      "note": "reverse curve, short tangent before it",
+      "apex": [
+        22.6187521,
+        75.868466
+      ]
+    }
+  ]
+}

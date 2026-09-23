@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Curve Speed Warning</title>
+  <meta name="description" content="In-vehicle advisory speed warning for horizontal curves, from OpenStreetMap geometry.">
+  <meta name="theme-color" content="#101418">
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="stylesheet" href="/index.css">
+</head>
+<body data-alert="none">
+
+  <header>
+    <h1>In-Vehicle Speed Warning System for Curve Roads</h1>
+    <p id="status" data-kind="info">Loading…</p>
+  </header>
+
+  <p id="warning" role="alert" aria-live="assertive"></p>
+
+  <main>
+    <section class="panel primary">
+      <h2>Speed</h2>
+      <dl>
+        <dt>Current</dt><dd id="currentspeed">0 km/h</dd>
+        <dt>Advisory for curve</dt><dd id="safespeed">—</dd>
+        <div id="part4row" hidden>
+          <dt>Part 4 formula</dt><dd id="part4">—</dd>
+        </div>
+        <dt>Required deceleration</dt><dd id="requireddecel">—</dd>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <h2>Curve ahead</h2>
+      <dl>
+        <dt>Radius</dt><dd id="radius">—</dd>
+        <dt>Distance</dt><dd id="distance">—</dd>
+        <dt>Superelevation</dt><dd id="superelevationreadout">—</dd>
+        <dt>Source</dt><dd id="datasource">Idle</dd>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <h2>Position</h2>
+      <dl>
+        <dt>Fix</dt><dd id="location">—</dd>
+        <dt>Accuracy</dt><dd id="accuracy">—</dd>
+      </dl>
+    </section>
+
+    <section class="panel">
+      <h2>Model settings</h2>
+      <label>Side friction
+        <select id="frictionmodel">
+          <option value="irc" selected>IRC:73/38, f = 0.15</option>
+          <option value="aashto">AASHTO f(V), speed dependent (sensitivity)</option>
+        </select>
+      </label>
+      <label>Superelevation
+        <select id="superelevation">
+          <option value="record" selected>From curve record (measured, else IRC design)</option>
+          <option value="zero">Override: 0% (conservative bound)</option>
+          <option value="seven">Override: 7% (Part 4 assumption)</option>
+        </select>
+      </label>
+      <label>Reaction time
+        <select id="reaction">
+          <option value="1">1.0 s</option>
+          <option value="1.2" selected>1.2 s</option>
+          <option value="1.5">1.5 s</option>
+          <option value="2.5">2.5 s (AASHTO PRT)</option>
+        </select>
+      </label>
+      <label class="check"><input type="checkbox" id="audio" checked> Audible alert</label>
+      <label class="check"><input type="checkbox" id="speech" checked> Spoken alert</label>
+      <label class="check"><input type="checkbox" id="comparison"> Show Part 4 advisory speed</label>
+      <p class="note" id="frictionreference"></p>
+    </section>
+
+    <section class="panel">
+      <h2>Trip log</h2>
+      <p>Records <strong id="logcount">0</strong> — every fix, matched radius, advisory speed and alert state.</p>
+      <div class="row">
+        <button id="download" type="button">Download CSV</button>
+        <button id="reset" type="button" class="secondary">Clear</button>
+      </div>
+    </section>
+  </main>
+
+  <button id="start" type="button">Start</button>
+
+  <script type="module" src="/index.js"></script>
+</body>
+</html>

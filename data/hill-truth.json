@@ -1,0 +1,112 @@
+{
+  "designSpeed": 40,
+  "noiseMetres": 1.2,
+  "nodeSpacing": [
+    8,
+    20
+  ],
+  "seed": 21,
+  "origin": {
+    "latitude": 22.61,
+    "longitude": 75.84
+  },
+  "totalLengthMetres": 1931,
+  "curves": [
+    {
+      "radius": 45,
+      "turn": "left",
+      "spiralLengthMetres": 36,
+      "arcLengthMetres": 60,
+      "startChainage": 250,
+      "circularStartChainage": 286,
+      "circularEndChainage": 346,
+      "endChainage": 382,
+      "apexChainage": 316,
+      "note": "hairpin",
+      "apex": [
+        22.6102209,
+        75.8429889
+      ]
+    },
+    {
+      "radius": 80,
+      "turn": "right",
+      "spiralLengthMetres": 42,
+      "arcLengthMetres": 70,
+      "startChainage": 502,
+      "circularStartChainage": 544,
+      "circularEndChainage": 614,
+      "endChainage": 656,
+      "apexChainage": 579,
+      "note": "sharp",
+      "apex": [
+        22.6123418,
+        75.8420567
+      ]
+    },
+    {
+      "radius": 60,
+      "turn": "left",
+      "spiralLengthMetres": 33,
+      "arcLengthMetres": 55,
+      "startChainage": 746,
+      "circularStartChainage": 779,
+      "circularEndChainage": 834,
+      "endChainage": 867,
+      "apexChainage": 806.5,
+      "note": "sharp, short tangent either side",
+      "apex": [
+        22.6139116,
+        75.8434067
+      ]
+    },
+    {
+      "radius": 110,
+      "turn": "right",
+      "spiralLengthMetres": 39.3,
+      "arcLengthMetres": 80,
+      "startChainage": 1017,
+      "circularStartChainage": 1056.3,
+      "circularEndChainage": 1136.3,
+      "endChainage": 1175.5,
+      "apexChainage": 1096.3,
+      "note": "moderate",
+      "apex": [
+        22.6161461,
+        75.8420423
+      ]
+    },
+    {
+      "radius": 50,
+      "turn": "left",
+      "spiralLengthMetres": 39,
+      "arcLengthMetres": 65,
+      "startChainage": 1275.5,
+      "circularStartChainage": 1314.5,
+      "circularEndChainage": 1379.5,
+      "endChainage": 1418.5,
+      "apexChainage": 1347,
+      "note": "hairpin",
+      "apex": [
+        22.6182556,
+        75.8426913
+      ]
+    },
+    {
+      "radius": 70,
+      "turn": "right",
+      "spiralLengthMetres": 36,
+      "arcLengthMetres": 60,
+      "startChainage": 1548.5,
+      "circularStartChainage": 1584.5,
+      "circularEndChainage": 1644.5,
+      "endChainage": 1680.5,
+      "apexChainage": 1614.5,
+      "note": "reverse curve",
+      "apex": [
+        22.6185164,
+        75.8401891
+      ]
+    }
+  ]
+}
