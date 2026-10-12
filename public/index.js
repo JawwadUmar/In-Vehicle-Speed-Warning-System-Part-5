@@ -27,6 +27,7 @@ const state = {
   inFlight: null,
   lastFetchAt: 0,
   lastFetchFailedAt: 0,
+  lastFetchFailureReason: null,
   alertLevel: 'none',
   alertSince: 0,
   announcedFor: null,
@@ -102,6 +103,8 @@ function stop() {
   state.tracker.clear();
   state.motion = new MotionEstimator();
   state.alertLevel = 'none';
+  state.lastFetchFailureReason = null;
+  state.lastFetchFailedAt = 0;
   dom.start.textContent = 'Start';
   dom.start.classList.remove('active');
   resetReadout();
@@ -195,9 +198,17 @@ function onPosition(position) {
     // only straight-line distance), cannot confirm which road you are on, and
     // its radius column is of unestablished provenance. It remains a reference
     // dataset for tools/validate.js.
-    source = state.lastFetchFailedAt && Date.now() - state.lastFetchFailedAt < FETCH_BACKOFF_MS
-      ? 'Road service unavailable — no warnings'
-      : 'Off the mapped road network — no warnings';
+    const isBackingOff = state.lastFetchFailedAt && Date.now() - state.lastFetchFailedAt < FETCH_BACKOFF_MS;
+    if (isBackingOff) {
+      const reason = state.lastFetchFailureReason ? ` (${state.lastFetchFailureReason})` : '';
+      source = `Road service unavailable${reason} — no warnings`;
+    } else if (state.inFlight) {
+      source = 'Fetching road geometry… — no warnings';
+    } else if (state.lastFetchFailureReason) {
+      source = `Road geometry unavailable (${state.lastFetchFailureReason}) — no warnings`;
+    } else {
+      source = 'Off the mapped road network — no warnings';
+    }
   }
 
   // The mode decides whether the curve's own superelevation is honoured or
@@ -283,17 +294,30 @@ function refreshCorridor(position, heading, lookAhead) {
   const deadline = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
 
   fetch(`/api/road-ahead?${query}`, { signal: controller.signal })
-    .then(response => (response.ok ? response.json() : Promise.reject(new Error(`HTTP ${response.status}`))))
+    .then(async response => {
+      if (response.ok) return response.json();
+      let detail = `HTTP ${response.status}`;
+      try {
+        const errorPayload = await response.json();
+        if (errorPayload.details) detail = `${errorPayload.error}: ${errorPayload.details}`;
+        else if (errorPayload.error) detail = errorPayload.error;
+      } catch {
+        /* ignore non-json error responses */
+      }
+      return Promise.reject(new Error(detail));
+    })
     .then(payload => {
       // Discard a response that a newer request has already superseded. Part 4
       // had no such guard, so a slow reply could overwrite fresher geometry.
       if (sequence !== state.fetchSequence) return;
       state.tracker.setCorridor(payload);
+      state.lastFetchFailureReason = null;
     })
     .catch(error => {
       if (sequence !== state.fetchSequence) return;
       state.lastFetchFailedAt = Date.now();
-      const reason = error.name === 'AbortError' ? 'timed out' : error.message;
+      const reason = error.name === 'AbortError' ? 'client request timed out (>8s)' : error.message;
+      state.lastFetchFailureReason = reason;
       setStatus(`Road geometry unavailable (${reason}). Warnings are suspended until it returns.`, 'warn');
       state.statusIsStale = true;
     })
@@ -404,7 +428,7 @@ const LOG_HEADER = [
   'distance_to_curve_m', 'in_curve', 'distance_to_exit_m',
   'superelevation', 'superelevation_source',
   'advisory_speed_kmh', 'advisory_speed_part4_kmh',
-  'required_decel_mps2', 'alert_level'
+  'required_decel_mps2', 'alert_level', 'fetch_failure_reason'
 ];
 
 function appendLog(position, motion, governing, alertLevel, timestamp) {
@@ -426,15 +450,22 @@ function appendLog(position, motion, governing, alertLevel, timestamp) {
     governing ? governing.advisorySpeedKmh.toFixed(2) : '',
     governing ? advisorySpeedPart4(governing.radius).toFixed(2) : '',
     governing && Number.isFinite(governing.requiredDeceleration) ? governing.requiredDeceleration.toFixed(3) : '',
-    alertLevel
+    alertLevel,
+    state.lastFetchFailureReason || ''
   ]);
   dom.logcount.textContent = String(state.log.length);
 }
 
 function downloadLog() {
   if (state.log.length === 0) return;
+  const escapeCsv = cell => {
+    const text = cell === null || cell === undefined ? '' : String(cell);
+    return text.includes(',') || text.includes('"') || text.includes('\n')
+      ? `"${text.replace(/"/g, '""')}"`
+      : text;
+  };
   const csv = [LOG_HEADER.join(','), ...state.log.map(row =>
-    row.map(cell => (String(cell).includes(',') ? `"${cell}"` : cell)).join(','))].join('\n');
+    row.map(escapeCsv).join(','))].join('\n');
   const blob = new Blob([csv], { type: 'text/csv' });
   const url = URL.createObjectURL(blob);
   const anchor = document.createElement('a');

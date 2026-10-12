@@ -100,7 +100,7 @@ function rateLimited(remoteAddress, limit = 30, windowMs = 60000) {
 async function serveRoadAhead(url, request, response) {
   const remoteAddress = request.socket.remoteAddress || 'unknown';
   if (rateLimited(remoteAddress)) {
-    sendJson(response, 429, { error: 'Too many requests.' });
+    sendJson(response, 429, { error: 'Rate limit exceeded (too many requests to server).', source: 'none' });
     return;
   }
 
@@ -115,7 +115,7 @@ async function serveRoadAhead(url, request, response) {
 
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude) ||
       Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
-    sendJson(response, 400, { error: 'lat and lon are required and must be valid coordinates.' });
+    sendJson(response, 400, { error: 'lat and lon are required and must be valid coordinates.', source: 'none' });
     return;
   }
 
@@ -133,10 +133,20 @@ async function serveRoadAhead(url, request, response) {
       sendJson(response, 200, { ...payload, source: 'curve-layer', cached: false });
       return;
     }
+    if (!OVERPASS_ENABLED) {
+      sendJson(response, 503, {
+        error: 'Within offline layer bounding box, but no driveable road matched vehicle position or heading.',
+        source: 'none'
+      });
+      return;
+    }
   }
 
   if (!OVERPASS_ENABLED) {
-    sendJson(response, 503, { error: 'No offline geometry here and the live fallback is disabled.', source: 'none' });
+    sendJson(response, 503, {
+      error: 'Position is outside offline curve layer area and live Overpass fallback is disabled (OVERPASS=off).',
+      source: 'none'
+    });
     return;
   }
 
@@ -157,13 +167,17 @@ async function serveRoadAhead(url, request, response) {
     const payload = buildCorridorPayload(elements, position, heading, lookAhead, {
       superelevationPolicy: { mode: 'zero' }
     });
-    if (!payload) throw new Error('No usable road geometry near this position.');
+    if (!payload) throw new Error('No driveable road matched near this location in OSM.');
     const value = { ...payload, source: 'overpass' };
     corridorCache.set(key, value);
     sendJson(response, 200, { ...value, cached: false });
   } catch (error) {
     console.error('Road lookup failed:', error.message);
-    sendJson(response, 503, { error: 'Road geometry is temporarily unavailable.', source: 'none' });
+    sendJson(response, 503, {
+      error: 'Road geometry temporarily unavailable',
+      details: error.message,
+      source: 'none'
+    });
   }
 }
 

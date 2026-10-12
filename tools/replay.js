@@ -145,7 +145,8 @@ for (const fix of track) {
     governing ? governing.advisorySpeedKmh.toFixed(2) : '',
     governing ? advisorySpeedPart4(governing.radius).toFixed(2) : '',
     Number.isFinite(requiredDecel) ? requiredDecel.toFixed(3) : 'inf',
-    effective
+    effective,
+    ''
   ]);
 }
 
@@ -157,12 +158,18 @@ const HEADER = [
   'distance_to_curve_m', 'in_curve', 'distance_to_exit_m',
   'superelevation', 'superelevation_source',
   'advisory_speed_kmh', 'advisory_speed_part4_kmh',
-  'required_decel_mps2', 'alert_level'
+  'required_decel_mps2', 'alert_level', 'fetch_failure_reason'
 ];
 
 const outputPath = path.resolve(process.cwd(), stringArg(args, 'out', 'logs/replay.csv'));
 await fs.mkdir(path.dirname(outputPath), { recursive: true });
-await fs.writeFile(outputPath, [HEADER.join(','), ...rows.map(row => row.join(','))].join('\n'));
+const escapeCsv = cell => {
+  const text = cell === null || cell === undefined ? '' : String(cell);
+  return text.includes(',') || text.includes('"') || text.includes('\n')
+    ? `"${text.replace(/"/g, '""')}"`
+    : text;
+};
+await fs.writeFile(outputPath, [HEADER.join(','), ...rows.map(row => row.map(escapeCsv).join(','))].join('\n'));
 
 const matched = rows.filter(row => row[6] !== 'unmatched').length;
 console.log(`\nmatched ${matched}/${rows.length} fixes (${(100 * matched / rows.length).toFixed(0)}%), ${corridorBuilds} corridor builds`);
